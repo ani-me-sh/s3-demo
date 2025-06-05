@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Deploy Static Website to S3</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>🚀 Deploy Static Website to S3 using GitHub Actions</h1>
+      <p class="subtitle">Automate your static site deployment to AWS S3 using CI/CD</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Step 1: Set Up Your Project</h2>
+      <ol>
+        <li>Download a free HTML template from <a href="https://www.free-css.com/free-css-templates" target="_blank">Free CSS</a>.</li>
+        <li>Extract and move the files into a folder named <code>public</code>.</li>
+        <li>Create a root folder and place the <code>public</code> folder inside it.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Step 2: Create and Configure an S3 Bucket</h2>
+      <p>Follow <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/HostingWebsiteOnS3Setup.html" target="_blank">this AWS guide</a> and complete steps 1 to 4 to enable static website hosting.</p>
+    </section>
+
+    <section>
+      <h2>Step 3: Set Up GitHub Repository and Secrets</h2>
+      <ol>
+        <li>Create a new GitHub repository.</li>
+        <li>Go to <strong>Settings → Secrets and Variables → Actions</strong>.</li>
+        <li>Add these secrets:
+          <ul>
+            <li><code>AWS_ACCESS_KEY_ID</code></li>
+            <li><code>AWS_SECRET_ACCESS_KEY</code></li>
+          </ul>
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Step 4: Create GitHub Actions Workflow</h2>
+      <ol>
+        <li>Create the file <code>.github/workflows/main.yml</code> in your project.</li>
+        <li>Paste the following code:</li>
+      </ol>
+
+<pre><code class="code-block">name: Upload Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync ./public/ s3://BUCKET_NAME --delete
+</code></pre>
+
+      <p><strong>Note:</strong> Replace <code>BUCKET_NAME</code> with your actual bucket name.</p>
+    </section>
+
+    <section>
+      <h2>Step 5: Push your code to GitHub</h2>
+<pre><code class="code-block">git init
+git add .
+git commit -m "initial commit"
+git remote add origin &lt;your-repo-url&gt;
+git branch -M main
+git push -u origin main
+</code></pre>
+    </section>
+
+    <section>
+      <h2>Step 6: Test Your Website</h2>
+      <ol>
+        <li>Go to the AWS Console and open S3.</li>
+        <li>Select your bucket and go to the <strong>Properties</strong> tab.</li>
+        <li>Under <strong>Static Website Hosting</strong>, click the endpoint link to access your website.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Deploy Guide | Built with 💻 GitHub Actions & ☁️ AWS</p>
+  </footer>
+</body>
+</html>
